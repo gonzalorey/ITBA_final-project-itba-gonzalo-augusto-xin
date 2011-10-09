@@ -40,14 +40,14 @@ char *_password;/*password del usuario logueado*/
 static int toDESlength(int  len);
 
 int
-connectServer(int argc, char *argv[])
+connectServer(char *argv[])
 {
-	if(argc<=2)/*no ingreso la cantidad de parametros necesaria*/
+/*	if(argc<=2)
 		return PARAM;
-
+*/
 	_add.sin_family = AF_INET;
-	_add.sin_port = atoi(argv[2]);
-	_add.sin_addr.s_addr = inet_addr(argv[1]);
+	_add.sin_port = htons(atoi(argv[1]));
+	_add.sin_addr.s_addr = inet_addr(argv[0]);
 
 
 	_username = NULL;
