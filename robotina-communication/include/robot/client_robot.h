@@ -31,7 +31,7 @@
 /*
  * invocar a esta funcion antes de realizar cualquier operacion sobre el servidor
  */
-int connectServer(int argc, char *argv[]);
+int connectServer(char *argv[]);
 
 
 /* login
