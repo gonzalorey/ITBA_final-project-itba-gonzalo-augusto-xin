@@ -29,6 +29,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.exe.debug.1895613607" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.exe.debug">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.exe.debug.option.optimization.level.1786814305" name="Optimization Level" superClass="gnu.c.compiler.exe.debug.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.exe.debug.option.debugging.level.1721192783" name="Debug Level" superClass="gnu.c.compiler.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.707046264" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="/usr/local/include/opencv"/>
+								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1583267451" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.exe.debug.1612292760" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.exe.debug">
@@ -103,5 +106,8 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.exe.release.1460096340;cdt.managedbuild.config.gnu.exe.release.1460096340.;cdt.managedbuild.tool.gnu.c.compiler.exe.release.957110234;cdt.managedbuild.tool.gnu.c.compiler.input.1503432059">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/robotina-communication"/>
 	</storageModule>
 </cproject>

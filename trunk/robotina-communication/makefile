@@ -2,7 +2,7 @@ INCLUDEDIR = include
 OBJDIR = obj
 SRCDIR = src
 
-CFLAGS = -Wall --ansi --pedantic -g  -I$(INCLUDEDIR)
+CFLAGS = -Wall --pedantic -g  -I$(INCLUDEDIR) `pkg-config --cflags opencv` `pkg-config --libs opencv`
 
 CLIENT_OBJ	=		$(OBJDIR)/client.o $(OBJDIR)/client_robot.o\
 					$(CLIENT_STUB_OBJ)
