@@ -1,0 +1,12 @@
+char USAGE[] = "Usage: stream_client <server_ip> <server_port> <width> <height>";
+char CONNECT_FAILED[] = "connect() failed.";
+char CAPTURE_FAILED[] = "cvCapture failed";
+char STREAM_SERVER[] = "stream_server";
+char STREAM_CLIENT[] = "stream_client";
+char PTHREAD_CREATE_FAILED[] = "pthread_create failed.";
+char PTHREAD_CANCEL_FAILED[] = "pthread_cancel failed.";
+char BIND_FAILED[] = "bind() failed";
+char LISTEN_FAILED[] = "listen() failed.";
+char ACCEPT_FAILED[] = "accept() failed";
+char SOCKET_FAILED[] = "socket() failed";
+char RECEIVE_FAILED[] = "recv failed";
