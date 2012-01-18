@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "cv.h"
 #include "highgui.h"
@@ -33,6 +34,18 @@ extern tpl_hook_t tpl_hook;
 // }
 // IplImage;
 
+void compare(char* a, char* b, int size) {
+    long i;
+    printf("%s\n", a);
+    for (i = 0; i < size; i++) {
+        if (a[i] != b[i]) {
+            printf("different value at index: %ld\n", i);
+            break;
+        }
+    }
+    return;
+}
+
 
 void packingImg(IplImage* img, char* pattern);
 IplImage* unpackingImg(char* pattern);
@@ -50,20 +63,30 @@ int main(int args, char** argv) {
 	
 	//Get one frame
 	IplImage* originalFrame = cvQueryFrame(capture);
+
+
+    char* d = malloc(originalFrame->imageSize);
+    memcpy(d, originalFrame->imageData, originalFrame->imageSize);
+
+    IplImage* newFrame = cvCreateImage(cvSize(originalFrame->width, originalFrame->height), originalFrame->depth, originalFrame->nChannels);
+    // cvZero(mmm);
+    cvSetData(newFrame, d, originalFrame->widthStep);
 	
 
-    // char* p = "S(iiiiic#c#iiiiissssisii#i#s)";
-    char* p = "iiiiiiA(c)";
-    printf("before packing: \n");
-    showIplImage(originalFrame);
-    printf("--------------------------------------------\n");
-	packingImg(cvCloneImage(originalFrame), p);
-	printf("after packing: \n");
-	IplImage* newFrame = unpackingImg(p);
-	showIplImage(newFrame);
-	
-	
+    // char* p = "S(iiiiic#c#iiiiiIIIIisii#i#s)";
+ //    char* p = "iiiiiic#";
+ //    printf("before packing: \n");
+ //    showIplImage(originalFrame);
+ //    printf("--------------------------------------------\n");
+	// packingImg(originalFrame, p);
+	// printf("after packing: \n");
+	// IplImage* newFrame = unpackingImg(p);
+	// showIplImage(newFrame);
 
+    cvSaveImage("newFrame.jpg", newFrame, 0);
+    cvSaveImage("originalFrame.jpg", originalFrame, 0);
+	
+    //compare(originalFrame->imageData, newFrame->imageData, originalFrame->imageSize);
 	FILE* fileOriginal = fopen("imgData.dat", "a");
 	FILE* fileNew = fopen("imgDataNew.dat", "a");
 	fprintf(fileOriginal, "%s", originalFrame->imageData);
@@ -82,13 +105,10 @@ int main(int args, char** argv) {
     // cvSetData(mmm, originalFrame->imageData, originalFrame->widthStep);
 
 
-     cvShowImage( "mywindow", newFrame);
-     while (1) {
-     	if ( (cvWaitKey(10) & 255) == 27 ) break;
-     }
-
-     cvSaveImage("newFrame.jpg", newFrame, 0);
-     cvSaveImage("originalFrame.jpg", originalFrame, 0);
+     // cvShowImage( "mywindow", newFrame);
+     // while (1) {
+     // 	if ( (cvWaitKey(10) & 255) == 27 ) break;
+     // }
 
      cvReleaseCapture(&capture);
      cvDestroyWindow("mywindow");
@@ -96,20 +116,22 @@ int main(int args, char** argv) {
      return 0;
 }
 
-
 void packingImg(IplImage* img, char* pattern) {
 	tpl_node *tn;
-	char ch = img->imageData[0];
+    int imageSize = img->imageSize;
+	char ch[3686400] = {0};
+    printf("%d\n\n\n", img->imageSize);
 	long i;
 	
 
-	tn = tpl_map(pattern, &img->imageSize, &img->width, &img->height, &img->depth, &img->nChannels, &img->widthStep, &ch);
-	tpl_pack(tn, 0);
+	// for (i = 0; i < img->imageSize; i++) {
+	// 	ch[i] = img->imageData[i];
+	// }
 
-	for (i = 1; i < img->imageSize; i++) {
-		ch = img->imageData[i];
-		tpl_pack(tn, 1);
-	}
+	memcpy(ch, img->imageData, img->imageSize);
+
+	tn = tpl_map(pattern, &img->imageSize, &img->width, &img->height, &img->depth, &img->nChannels, &img->widthStep, &ch, img->imageSize);
+	tpl_pack(tn, 0);
 
 	tpl_dump(tn, TPL_FILE, "ci_img.tpl");
     tpl_free(tn);
@@ -128,26 +150,73 @@ IplImage* unpackingImg(char* pattern) {
 	int d;
 	int ch;
 	int ws;
-	tn = tpl_map(pattern, &size, &w, &h, &d, &ch, &ws, &imgChar);
+	long i = 0;
+    char imageData[3686400] = {0};
+	tn = tpl_map(pattern, &size, &w, &h, &d, &ch, &ws, &imageData, 3686400);
 	tpl_load(tn, TPL_FILE, "ci_img.tpl");
     tpl_unpack(tn,0);
 
-    
-    long i = 0;
-    char imageData[size];
-    imageData[0] = imgChar;
-	for (i = 1; i < size; i++) {
-		tpl_unpack(tn, 1);
-		imageData[i] = imgChar;
-	}
     tpl_free(tn);
 
     result = cvCreateImage(cvSize(w, h), d, ch);
-    cvZero(result);
     cvSetData(result, imageData, ws);
+    // result->imageData = imageData;
     result->imageDataOrigin = NULL;
 	return result;
 }
+
+
+// void packingImg(IplImage* img, char* pattern) {
+// 	tpl_node *tn;
+// 	char ch = img->imageData[0];
+// 	long i;
+	
+
+// 	tn = tpl_map(pattern, &img->imageSize, &img->width, &img->height, &img->depth, &img->nChannels, &img->widthStep, &ch);
+// 	tpl_pack(tn, 0);
+
+// 	for (i = 1; i < img->imageSize; i++) {
+// 		ch = img->imageData[i];
+// 		tpl_pack(tn, 1);
+// 	}
+
+// 	tpl_dump(tn, TPL_FILE, "ci_img.tpl");
+//     tpl_free(tn);
+
+
+// 	return;
+// }
+
+// IplImage* unpackingImg(char* pattern) {
+// 	tpl_node *tn;
+// 	IplImage* result;
+// 	char imgChar = 'p';
+// 	int size;
+// 	int w;
+// 	int h;
+// 	int d;
+// 	int ch;
+// 	int ws;
+// 	tn = tpl_map(pattern, &size, &w, &h, &d, &ch, &ws, &imgChar);
+// 	tpl_load(tn, TPL_FILE, "ci_img.tpl");
+//     tpl_unpack(tn,0);
+
+    
+//     long i = 0;
+//     char imageData[size];
+//     imageData[0] = imgChar;
+// 	for (i = 1; i < size; i++) {
+// 		tpl_unpack(tn, 1);
+// 		imageData[i] = imgChar;
+// 	}
+//     tpl_free(tn);
+
+//     result = cvCreateImage(cvSize(w, h), d, ch);
+//     cvZero(result);
+//     cvSetData(result, imageData, ws);
+//     result->imageDataOrigin = NULL;
+// 	return result;
+// }
 
 // void packingImg(IplImage* img, char* pattern) {
 // 	tpl_node *tn;
@@ -162,7 +231,7 @@ IplImage* unpackingImg(char* pattern) {
 
 // IplImage* unpackingImg(char* pattern) {
 // 	tpl_node *tn;
-// 	IplImage* result = malloc(sizeof(IplImage));
+// 	IplImage* result = cvCreateImage(cvSize(1280, 720), 8, 3);
 // 	tn = tpl_map(pattern, result, 4, 4, 4, 4);
 // 	tpl_load(tn, TPL_FILE, "ci_img.tpl");
 //     tpl_unpack(tn,0);
