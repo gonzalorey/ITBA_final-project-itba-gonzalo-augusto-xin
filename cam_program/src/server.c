@@ -137,6 +137,7 @@ void* streamServer(void* arg)
  
     /* the size of the data to be sent */
     int imgsize = img1->imageSize;
+    printf("imageSize: %ld\n", img1->imageSize);
     int bytes, i;
  
     /* start sending images */
