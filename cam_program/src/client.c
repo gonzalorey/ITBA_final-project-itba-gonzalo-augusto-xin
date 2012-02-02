@@ -25,7 +25,13 @@ int       is_data_ready = 0;
 int       sock;
 char*     server_ip;
 int       server_port;
- 
+int     width;
+int     height;
+int     key;
+int     depth;
+int     nChannels;
+int     widthStep;
+
 pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
  
 void* streamClient(void* arg);
@@ -34,9 +40,8 @@ void  quit(char* msg, int retval);
 int main(int argc, char** argv)
 {
     pthread_t thread_c;
-    int width, height, key;
  
-    if (argc != 5) {
+    if (argc != 8) {
         quit(USAGE, 0);
     }
  
@@ -45,10 +50,14 @@ int main(int argc, char** argv)
     server_port = atoi(argv[2]);
     width       = atoi(argv[3]);
     height      = atoi(argv[4]);
+    depth       = atoi(argv[5]);
+    nChannels   = atoi(argv[6]);
+    widthStep   = atoi(argv[7]);
  
     /* create image */
-    img = cvCreateImage(cvSize(width, height), IPL_DEPTH_8U, 1);
-    cvZero(img);
+    img = cvCreateImage(cvSize(width, height), depth, nChannels);
+    img->widthStep = widthStep;
+    
  
     /* run the streaming client as a separate thread */
     if (pthread_create(&thread_c, NULL, streamClient, NULL)) {
@@ -110,12 +119,14 @@ void* streamClient(void* arg)
         quit(CONNECT_FAILED, 1);
     }
  
-    int  imgsize = img->imageSize;
-    char* sockdata = (char*)malloc(imgsize*(sizeof(char)));
+    
 
-    ;
+    char* sockdata = (char*)malloc(width*height*4);
+
     int  i, j, k, bytes;
- 
+    
+    cvSetData(img, sockdata, widthStep);
+    int  imgsize = img->imageSize;
     /* start receiving images */
     while(1) 
     {
@@ -129,11 +140,13 @@ void* streamClient(void* arg)
         /* convert the received data to OpenCV's IplImage format, thread safe */
         pthread_mutex_lock(&mutex);
  
-        for (i = 0, k = 0; i < img->height; i++) {
-            for (j = 0; j < img->width; j++) {
-                ((uchar*)(img->imageData + i * img->widthStep))[j] = sockdata[k++];
-            }
-        }
+        // for (i = 0, k = 0; i < img->height; i++) {
+        //     for (j = 0; j < img->width; j++) {
+        //         ((uchar*)(img->imageData + i * img->widthStep))[j] = sockdata[k++];
+        //     }
+        // }
+
+        cvSetData(img, sockdata, widthStep);
  
         is_data_ready = 1;
         pthread_mutex_unlock(&mutex);
@@ -152,10 +165,10 @@ void* streamClient(void* arg)
 void quit(char* msg, int retval)
 {
     if (retval == 0) {
-        fprintf(stdout, (msg == NULL ? "" : msg));
+        fprintf(stdout, "%s\n", (msg == NULL ? "" : msg));
         fprintf(stdout, "\n");
     } else {
-        fprintf(stderr, (msg == NULL ? "" : msg));
+        fprintf(stderr, "%s\n", (msg == NULL ? "" : msg));
         fprintf(stderr, "\n");
     }
  
