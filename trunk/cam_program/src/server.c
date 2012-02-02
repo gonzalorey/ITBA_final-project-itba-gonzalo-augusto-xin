@@ -56,7 +56,7 @@ int main(int argc, char** argv)
     cvNamedWindow(STREAM_SERVER, CV_WINDOW_AUTOSIZE);
  
     /* print the width and height of the frame, needed by the client */
-    fprintf(stdout, "width:  %d\nheight: %d\n\n", img0->width, img0->height);
+    fprintf(stdout, "width:  %d\nheight: %d\ndepth: %d\nnChannels %d\nwidthStep: %d\n\n", img0->width, img0->height, img0->depth, img0->nChannels, img0->widthStep);
     fprintf(stdout, "Press 'q' to quit.\n\n");
  
     /* run the streaming server as a separate thread */
