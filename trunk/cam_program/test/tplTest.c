@@ -65,14 +65,30 @@ int main(int args, char** argv) {
 	IplImage* originalFrame = cvQueryFrame(capture);
 
 
+    showIplImage(originalFrame);
     char* d = malloc(originalFrame->imageSize);
-    memcpy(d, originalFrame->imageData, originalFrame->imageSize);
+    
 
     IplImage* newFrame = cvCreateImage(cvSize(originalFrame->width, originalFrame->height), originalFrame->depth, originalFrame->nChannels);
-    // cvZero(mmm);
-    cvSetData(newFrame, d, originalFrame->widthStep);
-	
+    printf("--------------------------------------------\n");
+    printf("after cvCreateImage\n");
+    showIplImage(newFrame);
+    printf("--------------------------------------------\n");
 
+
+
+    cvSetData(newFrame, d, originalFrame->widthStep);
+    printf("after cvSetData\n");
+    showIplImage(newFrame);
+    printf("--------------------------------------------\n");
+    
+    
+    memcpy(d, originalFrame->imageData, originalFrame->imageSize);
+    cvSetData(newFrame, d, originalFrame->widthStep);
+    printf("after memcpy and cvSetData\n");
+    showIplImage(newFrame);
+    printf("--------------------------------------------\n");
+    
     // char* p = "S(iiiiic#c#iiiiiIIIIisii#i#s)";
  //    char* p = "iiiiiic#";
  //    printf("before packing: \n");

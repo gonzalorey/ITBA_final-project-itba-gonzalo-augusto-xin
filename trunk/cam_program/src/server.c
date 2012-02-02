@@ -78,7 +78,7 @@ int main(int argc, char** argv)
          * so we enclose it with pthread_mutex_lock to make it thread safe 
          */
         pthread_mutex_lock(&mutex);
-        cvCvtColor(img0, img1, CV_BGR2GRAY);
+        // cvCvtColor(img0, img1, CV_BGR2GRAY);
         is_data_ready = 1;
         pthread_mutex_unlock(&mutex);
  
@@ -136,8 +136,7 @@ void* streamServer(void* arg)
     }
  
     /* the size of the data to be sent */
-    int imgsize = img1->imageSize;
-    printf("imageSize: %ld\n", img1->imageSize);
+    int imgsize = img0->imageSize;
     int bytes, i;
  
     /* start sending images */
@@ -146,7 +145,7 @@ void* streamServer(void* arg)
         /* send the grayscaled frame, thread safe */
         pthread_mutex_lock(&mutex);
         if (is_data_ready) {
-            bytes = send(clientsock, img1->imageData, imgsize, 0);
+            bytes = send(clientsock, img0->imageData, imgsize, 0);
             is_data_ready = 0;
         }
         pthread_mutex_unlock(&mutex);
@@ -175,10 +174,10 @@ void* streamServer(void* arg)
 void quit(char* msg, int retval)
 {
     if (retval == 0) {
-        fprintf(stdout, (msg == NULL ? "" : msg));
+        fprintf(stdout, "%s\n", (msg == NULL ? "" : msg));
         fprintf(stdout, "\n");
     } else {
-        fprintf(stderr, (msg == NULL ? "" : msg));
+        fprintf(stderr, "%s\n", (msg == NULL ? "" : msg));
         fprintf(stderr, "\n");
     }
  

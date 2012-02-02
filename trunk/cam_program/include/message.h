@@ -1,4 +1,4 @@
-char USAGE[] = "Usage: stream_client <server_ip> <server_port> <width> <height>";
+char USAGE[] = "Usage: stream_client <server_ip> <server_port> <width> <height> <depth> <nChannels> <widthStep>";
 char CONNECT_FAILED[] = "connect() failed.";
 char CAPTURE_FAILED[] = "cvCapture failed";
 char STREAM_SERVER[] = "stream_server";
